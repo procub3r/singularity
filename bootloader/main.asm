@@ -17,11 +17,14 @@ mov bx, 0x7e00 ; load right next to the bootsector
 int 0x13
 jc loadError ; the carry bit will be set if there was an error
 
-; test if the second sector has been loaded by printing a number from it
-mov dx, [0x7e00]
-call printHex
+lgdt [gdtr] ; load gdt
 
-jmp $ ; stop execution and hang indefinitely here
+; switch to protected mode
+cli
+mov eax, cr0
+or al, 1
+mov cr0, eax
+jmp 0x08:pModeRocks ; cs is 0x08 in our gdt
 
 loadError:
     mov bx, loadErrorString
@@ -30,10 +33,16 @@ loadError:
 
 loadErrorString: db "Failed to load additional sectors to memory", 0
 
+%include "gdt.asm"
 %include "print.asm"
 
 ; pad with zeros till bootsector end
 times 510 - ($ - $$) db 0
 dw 0xaa55 ; bootsector end
 
-dw 0x1337 ; to test if the second sector has been loaded
+; second sector
+[bits 32]
+
+pModeRocks:
+    ; hang indefinitely because we can't do anything else at the moment
+    jmp $
