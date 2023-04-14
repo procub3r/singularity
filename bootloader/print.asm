@@ -1,12 +1,14 @@
 ; print dx in hexadecimal format
 printHex:
     push ax
+    push cx
     mov al, '0'
     call printChar
     mov al, 'x'
     call printChar
+    mov cx, 4
 .loopStart:
-    cmp dx, 0
+    cmp cx, 0
     je .loopEnd
     mov ax, dx
     and ax, 0xf000
@@ -18,8 +20,10 @@ printHex:
     add ax, 0x30
     call printChar
     shl dx, 4
+    dec cx
     jmp .loopStart
 .loopEnd:
+    pop cx
     pop ax
     ret
 
