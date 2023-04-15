@@ -50,7 +50,7 @@ loadError:
     jmp $
 
 loadSectorMessage: db "Loading additional sectors to memory... ", 0
-loadSectorErrorMessage: db "Failed to load additional sectors to memory", 0
+loadSectorErrorMessage: db "Failed to load sectors to memory", 0
 loadGdtMessage: db "Loading GDT... ", 0
 switchingToPModeMessage: db "Switching to protected mode... ", 0
 doneMessage: db "done!", 0x0d, 0x0a, 0

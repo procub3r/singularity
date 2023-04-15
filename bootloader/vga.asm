@@ -1,5 +1,4 @@
 ; vga driver
-
 vgaCursorPos: dw 0
 
 vgaPrintString:
@@ -11,12 +10,12 @@ vgaPrintString:
     cmp al, 0
     je .loopEnd
     or ax, 0x0700
-    mov [edi + 0x0b8000], word ax
+    mov word [edi + 0x0b8000], ax
     inc ebx
     add di, 2
     jmp .loopStart
 .loopEnd:
-    mov [vgaCursorPos], word di
+    mov word [vgaCursorPos], di
     pop edi
     pop eax
     ret
@@ -27,7 +26,7 @@ vgaClearScreen:
 .loopStart:
     cmp edi, 4000
     je .loopEnd
-    mov [edi + 0x0b8000], word 0x0720
+    mov word [edi + 0x0b8000], 0x0720
     add edi, 2
     jmp .loopStart
 .loopEnd:
