@@ -42,7 +42,7 @@ call printString
 mov eax, cr0
 or al, 1
 mov cr0, eax
-jmp 0x08:pModeRocks ; cs is 0x08 in our gdt
+jmp 0x08:pMode ; cs is 0x08 in our gdt
 
 loadError:
     mov bx, loadSectorErrorMessage
@@ -63,9 +63,4 @@ doneMessage: db "done!", 0x0d, 0x0a, 0
 times 510 - ($ - $$) db 0
 dw 0xaa55 ; bootsector end
 
-; second sector
-[bits 32]
-
-pModeRocks:
-    ; hang indefinitely because we can't do anything else at the moment
-    jmp $
+%include "pmode.asm"
