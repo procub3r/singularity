@@ -1,4 +1,5 @@
-; print dx in hexadecimal format
+; print functions that use bios int 0x10
+; print value in dx as hex
 printHex:
     push ax
     push cx

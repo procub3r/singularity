@@ -5,9 +5,6 @@ a20enable:
     ; gotta implement it for bare metal.
     ret
 
-a20EnabledMessage: db "The A20 line was already enabled", 0x0d, 0x0a, 0
-a20DisabledMessage: db "The A20 line was not enabled by default", 0x0d, 0x0a, 0
-
 ; check if the A20 line is enabled
 a20check:
     push ax
@@ -54,3 +51,6 @@ a20check:
     pop bx
     pop ax
     ret
+
+a20EnabledMessage: db "The A20 line was already enabled", 0x0d, 0x0a, 0
+a20DisabledMessage: db "The A20 line was not enabled by default", 0x0d, 0x0a, 0
