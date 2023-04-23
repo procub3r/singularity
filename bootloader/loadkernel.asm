@@ -13,12 +13,12 @@ p_memsz  equ 0x28
 
 movzx r8, word [e_phnum] ; number of phdrs
 movzx r9, word [e_phentsize] ; size of each phdr
-mov r10, qword [elf_base + e_phoff] ; offset to first phdr
+mov r10, qword [e_phoff] ; offset to first phdr
 add r10, elf_base ; absolute pointer to first phdr
 
 loadSector:
-    cmp r8, 0
-    jz jumpToKernel
+    cmp r8, qword 0
+    je jumpToKernel
     cmp dword [r10 + p_type], 0x01
     jne .skipLoading ; the segment is not loadable
 
@@ -32,7 +32,7 @@ loadSector:
 
     ; rdi already points to the end of the
     ; segment copied over from the elf file
-    mov al, 0
+    xor rax, rax
     mov rcx, [r10 + p_memsz]
     sub rcx, r11 ; rcx = memsz - filesz
     rep stosb    ; zero out the remaining bytes

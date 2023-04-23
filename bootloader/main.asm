@@ -16,7 +16,7 @@ mov sp, bp
 
 ; load the kernel
 mov ah, 0x02   ; read function
-mov al, 22     ; read 22 sectors (the kernel fits in 22 for now)
+mov al, 0x09   ; read 9 sectors (the kernel fits in 9 for now)
 mov cl, 0x02   ; start reading from the second sector
                ; the first sector is the bootsector
 mov ch, 0x00   ; read from cylinder 0
