@@ -40,10 +40,10 @@ a20check:
     pop es
 
     jne .enabled
-    mov bx, a20DisabledMessage
+    mov bx, a20_disabled
     jmp .end
 .enabled:
-    mov bx, a20EnabledMessage
+    mov bx, a20_enabled
 .end:
     call printString
     pop si
@@ -52,5 +52,5 @@ a20check:
     pop ax
     ret
 
-a20EnabledMessage: db "The A20 line was already enabled", 0x0d, 0x0a, 0
-a20DisabledMessage: db "The A20 line was not enabled by default", 0x0d, 0x0a, 0
+a20_enabled: db "A20 enabled", 0x0d, 0x0a, 0
+a20_disabled: db "A20 disabled", 0x0d, 0x0a, 0

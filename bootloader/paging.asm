@@ -14,12 +14,13 @@ mov word [0x2000], 0x3003
 mov word [0x3000], 0x4003
 
 ; identity map the first 512 * 4 = 2048KiB
-mov bx, 0x03   ; 0b11 = present + read/write perms
+mov ebx, 0x03  ; 0b11 = present + read/write perms
 mov cx, 512    ; loop 512 times
 mov di, 0x4000 ; address of PT
+cld
 .setEntry:
-    mov word [di], bx
-    add bx, 0x1000
+    mov dword [di], ebx
+    add ebx, 0x1000
     add di, 8 ; size of each entry is 8 bytes
     loop .setEntry
 

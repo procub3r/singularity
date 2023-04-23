@@ -13,5 +13,5 @@ cp bin/bootloader.img bin/disk.img
 cat zig-out/bin/kernel.elf >> bin/disk.img
 
 # boot from the disk image
-qemu-system-x86_64 -fda bin/disk.img
+qemu-system-x86_64 -d int --no-reboot --no-shutdown -fda bin/disk.img
 # qemu-system-x86_64 -drive format=raw,file=bin/bootloader.img
