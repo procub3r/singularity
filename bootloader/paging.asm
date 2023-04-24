@@ -9,8 +9,14 @@ mov eax, 0x1000 ; address of PMLT4
 mov cr3, eax   ; set PMLT4 address
 
 ; point PML4 -> PDPT -> PD -> PT
+; map the higher half to the same paddrs as the lower half
 mov word [0x1000], 0x2003
+mov word [0x1ff8], 0x2003
+
+; map the first G and a G from -2G to the same paddrs
 mov word [0x2000], 0x3003
+mov word [0x2ff0], 0x3003
+
 mov word [0x3000], 0x4003
 
 ; identity map the first 512 * 4 = 2048KiB

@@ -14,9 +14,9 @@ mov ss, ax
 mov bp, 0x7c00
 mov sp, bp
 
-; load the kernel
+; load rest of the loader and the kernel
 mov ah, 0x02   ; read function
-mov al, 0x09   ; read 9 sectors (the kernel fits in 9 for now)
+mov al, 0x0a   ; read 10 sectors (1 for the remaining loader and 9 for the kernel)
 mov cl, 0x02   ; start reading from the second sector
                ; the first sector is the bootsector
 mov ch, 0x00   ; read from cylinder 0
@@ -26,8 +26,9 @@ mov dh, 0x00   ; read from head 0
 push 0
 pop es         ; sector(s) will be loaded to es:bx
 
-elf_base equ 0x7e00 ; load right next to the bootsector
-mov bx, elf_base    ; we have 638 KB of free memory from here (i think)
+; load to right after the bootsector in memory
+mov bx, 0x7e00      ; we have 638 KB of free memory from here (i think)
+elf_base equ 0x8000 ; kernel will be loaded right after the first additional sector
 
 int 0x13
 jnc .loadSuccess ; carry bit is set on error
@@ -64,15 +65,17 @@ jmp 0x08:longMode
 %include "a20.asm"
 %include "gdt.asm"
 
-[bits 64]
-longMode:
-    %include "loadkernel.asm"
-    ; ^ loadkernel.asm should load and jump to the kernel
-
 ; strings
 loaded_sectors: db "loaded sectors", 0x0d, 0x0a, 0
 loaded_gdt: db "loaded GDT", 0x0d, 0x0a, 0
 
 ; padding
 times 510 - ($ - $$) db 0
-dw 0xaa55 ; bootsector end
+dw 0xaa55 ; bootsector (sector 0) end
+
+[bits 64]
+longMode:
+    %include "loadkernel.asm"
+    ; ^ loadkernel.asm should load and jump to the kernel
+
+times 1024 - ($ - $$) db 0 ; sector 1 end
