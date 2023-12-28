@@ -1,36 +1,27 @@
 const std = @import("std");
 
+const INSTALL_PATH = "bin/";
+const LOADER = "loader.bin";
+
 pub fn build(b: *std.Build) void {
-    // Target a freestanding environment which uses just the general purpose registers.
-    const target = std.zig.CrossTarget{
-        .cpu_arch = .x86_64,
-        .cpu_features_add = blk: {
-            const add_features = std.Target.Cpu.Feature.Set.empty;
-            // TODO: add features.
-            break :blk add_features;
-        },
-        .cpu_features_sub = blk: {
-            const sub_features = std.Target.Cpu.Feature.Set.empty;
-            // TODO: remove features.
-            break :blk sub_features;
-        },
-        .os_tag = std.Target.Os.Tag.freestanding,
-        .abi = std.Target.Abi.none,
-    };
+    b.install_path = INSTALL_PATH;
 
-    // Use the standard optimization options. I'll probably build using -Doptimize=ReleaseSmall
-    // because I haven't figured out how to make use of debug info yet.
-    const optimize = b.standardOptimizeOption(.{});
+    // build the loader with nasm
+    const loader_cmd = b.addSystemCommand(&.{ "nasm", "-fbin", "-Iloader/" });
+    loader_cmd.addFileArg(.{ .path = "loader/main.asm" });
+    const loader = loader_cmd.addPrefixedOutputFileArg("-o", LOADER);
 
-    // kernel elf executable
-    const kernel = b.addExecutable(.{
-        .name = "kernel.elf",
-        .root_source_file = .{ .path = "kernel/main.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
+    // // install the loader to INSTALL_PATH
+    // const loader_install = b.addInstallFile(loader, LOADER);
+    // b.getInstallStep().dependOn(&loader_install.step);
 
-    // Use custom linker script to load to the higher half, among other things.
-    kernel.setLinkerScript(.{ .path = "linker.ld" });
-    b.installArtifact(kernel);
+    // run singularity on qemu
+    const run_cmd = b.addSystemCommand(&.{"qemu-system-x86_64"});
+    run_cmd.addArg("-drive");
+    run_cmd.addPrefixedFileArg("format=raw,file=", loader);
+    run_cmd.step.dependOn(b.getInstallStep());
+
+    // run step
+    const run_step = b.step("run", "Run singularity");
+    run_step.dependOn(&run_cmd.step);
 }
