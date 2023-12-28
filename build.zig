@@ -5,12 +5,12 @@ pub fn build(b: *std.Build) void {
     const target = std.zig.CrossTarget{
         .cpu_arch = .x86_64,
         .cpu_features_add = blk: {
-            var add_features = std.Target.Cpu.Feature.Set.empty;
+            const add_features = std.Target.Cpu.Feature.Set.empty;
             // TODO: add features.
             break :blk add_features;
         },
         .cpu_features_sub = blk: {
-            var sub_features = std.Target.Cpu.Feature.Set.empty;
+            const sub_features = std.Target.Cpu.Feature.Set.empty;
             // TODO: remove features.
             break :blk sub_features;
         },
