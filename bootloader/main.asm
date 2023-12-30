@@ -40,6 +40,16 @@ init:
     cli ; clear the IF flag to disable
         ; maskable external interrupts
 
+    ; initialize segment registers to 0
+    mov ax, 0
+    mov ds, ax
+    mov ss, ax
+
+    ; start the stack at 0x7c00, growing downwards.
+    ; there is almost 30K of free space here!
+    mov bp, 0x7c00
+    mov sp, bp
+
     lgdt [gdtr] ; load gdt for long mode
 
     ; setup paging.
