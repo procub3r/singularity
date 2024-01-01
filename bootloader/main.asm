@@ -7,7 +7,7 @@
 jmp 0x0000:init
 
 ; includes
-; %include "print.asm"
+%include "print.asm"
 
 ; 64 bit global descriptor table
 gdt:
@@ -35,6 +35,13 @@ gdtr:
     dw gdt.end - gdt - 1 ; size of gdt
     dq gdt ; pointer to gdt
 
+; jmp here upon errors
+; debug in qemu with -d in_asm flag
+hang:
+    mov al, 'e' ; e for error
+    call print_char
+    jmp $ ; hang indefinitely
+
 ; bootloader init
 init:
     cli ; clear the IF flag to disable
@@ -50,7 +57,27 @@ init:
     mov bp, 0x7c00
     mov sp, bp
 
-    lgdt [gdtr] ; load gdt for long mode
+    ; load the kernel elf to 0x7e00 (right after the bootsector)
+    mov ah, 0x02   ; read function
+    mov al, 0x10   ; read sectors. this should cover the kernel elf
+    mov cl, 0x02   ; start reading from the second sector
+                   ; the first sector is the bootsector
+    mov ch, 0x00   ; read from cylinder 0
+    ; mov dl, 0x80 ; set drive number manually
+                   ; the BIOS should set it for us, however
+    mov dh, 0x00   ; read from head 0
+    push 0
+    pop es         ; sector(s) will be loaded to es:bx
+
+    ; load to right after the bootsector in memory
+    mov bx, 0x7e00 ; we have 638K of free memory from here (i think)
+    int 0x13       ; load sectors
+
+    ; carry bit is set on disk read error
+    jc hang
+
+    ; load gdt for long mode
+    lgdt [gdtr]
 
     ; setup paging.
     ; zero out all entries on all levels
