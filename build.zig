@@ -47,7 +47,7 @@ pub fn build(b: *std.Build) void {
     // run singularity on qemu
     const run_cmd = b.addSystemCommand(&.{"qemu-system-x86_64"});
     run_cmd.addArg("-drive");
-    run_cmd.addPrefixedFileArg("format=raw,file=", bootloader);
+    run_cmd.addPrefixedFileArg("if=floppy,format=raw,file=", bootloader);
     run_cmd.step.dependOn(b.getInstallStep());
 
     // run step
@@ -58,7 +58,7 @@ pub fn build(b: *std.Build) void {
     const debug_cmd = b.addSystemCommand(&.{"qemu-system-x86_64"});
     debug_cmd.addArgs(&.{ "-d", "int", "-no-shutdown", "-no-reboot" });
     debug_cmd.addArg("-drive");
-    debug_cmd.addPrefixedFileArg("format=raw,file=", bootloader);
+    debug_cmd.addPrefixedFileArg("if=floppy,format=raw,file=", bootloader);
     debug_cmd.step.dependOn(b.getInstallStep());
 
     // debug step
