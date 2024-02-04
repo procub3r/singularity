@@ -51,10 +51,8 @@ load_stage2:
     pop ds
     mov si, stage2_dapack
 
-    ; calculate number of sectors to read
-    mov cx, stage2.end - stage2
-    shr cx, 9 ; divide by 512
-    inc cx    ; cx = number of sectors
+    ; number of sectors to read
+    mov cx, ((stage2.end - stage2) >> 9) + 1
 
 ; read stage2 to memory sector by sector
 .loop:
